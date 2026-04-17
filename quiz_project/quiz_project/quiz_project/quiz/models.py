@@ -41,3 +41,23 @@ class UserAttempt(models.Model):
 
     def percentage(self):
         return round((self.score / self.total) * 100, 2) if self.total > 0 else 0
+class Quiz(models.Model):
+    CATEGORY_CHOICES = [
+        ('tech', 'Technology'),
+        ('math', 'Mathematics'),
+        ('gk', 'General Knowledge'),
+    ]
+
+    DIFFICULTY_CHOICES = [
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard'),
+    ]
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='tech')
+    difficulty = models.CharField(max_length=50, choices=DIFFICULTY_CHOICES, default='easy')

@@ -121,3 +121,12 @@ def start_quiz(request, quiz_id):
         'quiz': quiz,
         'questions': questions,
     })
+def home(request):
+    category = request.GET.get('category')
+    
+    if category:
+        quizzes = Quiz.objects.filter(category=category)
+    else:
+        quizzes = Quiz.objects.all()
+
+    return render(request, 'home.html', {'quizzes': quizzes})
