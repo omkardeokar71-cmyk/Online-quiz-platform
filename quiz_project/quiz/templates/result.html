@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card">
+        <h2>Quiz Result</h2>
+        <p><strong>{{ quiz.title }}</strong></p>
+        <p>Your Score: {{ score }} / {{ total }}</p>
+        <p>Percentage: {{ percentage }}%</p>
+
+        <div style="margin-top: 20px;">
+            <a href="{% url 'start_quiz' quiz.id %}" class="button">Retake Quiz</a>
+            <a href="{% url 'home' %}" class="button">Home</a>
+        </div>
+    </div>
+{% endblock %}

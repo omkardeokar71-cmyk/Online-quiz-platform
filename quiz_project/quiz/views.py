@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm, QuizForm, QuestionForm, ChoiceForm
-from .models import Quiz, Question
+from .models import Quiz, Question, UserAttempt
 
 
 def register_view(request):
@@ -84,20 +84,34 @@ def add_choice(request, question_id):
 def start_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
     questions = quiz.questions.prefetch_related('choices').all()
-    score = None
-    total = questions.count()
 
     if request.method == 'POST':
         score = 0
+        total = questions.count()
+
         for question in questions:
             selected_choice_id = request.POST.get(f'q{question.id}')
-            if selected_choice_id:
-                if question.choices.filter(id=selected_choice_id, is_correct=True).exists():
-                    score += 1
+            if selected_choice_id and question.choices.filter(id=selected_choice_id, is_correct=True).exists():
+                score += 1
+
+        percentage = round((score / total) * 100, 2) if total else 0
+
+        if request.user.is_authenticated:
+            UserAttempt.objects.create(
+                user=request.user,
+                quiz=quiz,
+                score=score,
+                total=total,
+            )
+
+        return render(request, 'result.html', {
+            'quiz': quiz,
+            'score': score,
+            'total': total,
+            'percentage': percentage,
+        })
 
     return render(request, 'start_quiz.html', {
         'quiz': quiz,
         'questions': questions,
-        'score': score,
-        'total': total,
     })

@@ -4,38 +4,35 @@
     <div class="card">
         <h2>{{ quiz.title }}</h2>
 
-        {% if score is not None %}
-            <div class="card" style="background: #f1f8e9;">
-                <strong>Quiz complete!</strong>
-                <p>You scored {{ score }} out of {{ total }}.</p>
-            </div>
-        {% endif %}
+        {% if questions %}
+            <form method="POST">
+                {% csrf_token %}
 
-        <form method="POST">
-            {% csrf_token %}
+                {% for question in questions %}
+                    <div class="question" style="display: none;">
+                        <h4>Question {{ forloop.counter }} of {{ questions|length }}</h4>
+                        <p>{{ question.question_text }}</p>
 
-            {% for question in questions %}
-                <div class="question" style="display: none;">
-                    <h4>Question {{ forloop.counter }} of {{ questions|length }}</h4>
-                    <p>{{ question.question_text }}</p>
+                        {% for choice in question.choices.all %}
+                            <label>
+                                <input type="radio" name="q{{ question.id }}" value="{{ choice.id }}">
+                                {{ choice.choice_text }}
+                            </label><br>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
 
-                    {% for choice in question.choices.all %}
-                        <label>
-                            <input type="radio" name="q{{ question.id }}" value="{{ choice.id }}">
-                            {{ choice.choice_text }}
-                        </label><br>
-                    {% endfor %}
+                <div style="margin-top: 20px;">
+                    <button type="button" id="prevBtn" onclick="changeQuestion(-1)">Previous</button>
+                    <button type="button" id="nextBtn" onclick="changeQuestion(1)">Next</button>
+                    <button type="submit" id="submitBtn">Submit</button>
                 </div>
-            {% endfor %}
+            </form>
 
-            <div style="margin-top: 20px;">
-                <button type="button" id="prevBtn" onclick="changeQuestion(-1)">Previous</button>
-                <button type="button" id="nextBtn" onclick="changeQuestion(1)">Next</button>
-                <button type="submit" id="submitBtn">Submit</button>
-            </div>
-        </form>
-
-        <p id="timer">Time: 60</p>
+            <p id="timer">Time: 60</p>
+        {% else %}
+            <p>This quiz has no questions yet.</p>
+        {% endif %}
     </div>
 
     <script>

@@ -27,3 +27,14 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+
+class UserAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    score = models.IntegerField()
+    total = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.quiz.title}: {self.score}/{self.total}"
