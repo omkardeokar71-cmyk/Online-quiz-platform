@@ -1,26 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="card">
-        <h2>Available Quizzes</h2>
-        {% if quizzes %}
-            <ul>
-                {% for quiz in quizzes %}
-                    <li>
-                        <strong>{{ quiz.title }}</strong>
-                        <p>{{ quiz.description|default:'No description available' }}</p>
-                        <small>Created by {{ quiz.created_by.username }}</small>
-                        <p><a href="{% url 'start_quiz' quiz.id %}">Start Quiz</a></p>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No quizzes are available yet.</p>
-            {% if user.is_authenticated %}
-                <p><a href="{% url 'create_quiz' %}">Create the first quiz</a>.</p>
-            {% else %}
-                <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to create quizzes.</p>
-            {% endif %}
-        {% endif %}
-    </div>
+<div class="card">
+    <h2>Available Quizzes</h2>
+    {% if quizzes %}
+    <ul>
+        {% for quiz in quizzes %}
+        <li>
+            <strong>{{ quiz.title }}</strong>
+            <p>{{ quiz.description|default:'No description available' }}</p>
+            <small>Created by {{ quiz.created_by.username }}</small>
+            <p><a href="{% url 'start_quiz' quiz.id %}">Start Quiz</a></p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No quizzes are available yet.</p>
+    {% if user.is_authenticated %}
+    <p><a href="{% url 'create_quiz' %}">Create the first quiz</a>.</p>
+    {% else %}
+    <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to create quizzes.
+    </p>
+    {% endif %}
+    {% endif %}
+</div>
 {% endblock %}
+<a href="/dashboard/">Go to Dashboard</a>

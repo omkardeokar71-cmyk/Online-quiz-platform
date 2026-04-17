@@ -42,6 +42,12 @@ def home(request):
 
 
 @login_required(login_url='login')
+def dashboard(request):
+    attempts = UserAttempt.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'dashboard.html', {'attempts': attempts})
+
+
+@login_required(login_url='login')
 def create_quiz(request):
     form = QuizForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():

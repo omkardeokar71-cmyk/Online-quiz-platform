@@ -38,3 +38,6 @@ class UserAttempt(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.quiz.title}: {self.score}/{self.total}"
+
+    def percentage(self):
+        return round((self.score / self.total) * 100, 2) if self.total > 0 else 0

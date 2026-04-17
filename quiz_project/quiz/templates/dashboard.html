@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card">
+        <h2>My Dashboard</h2>
+        {% if attempts %}
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #eee;">
+                        <th style="padding: 10px; text-align: left;">Quiz</th>
+                        <th style="padding: 10px; text-align: left;">Score</th>
+                        <th style="padding: 10px; text-align: left;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in attempts %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 10px;">{{ attempt.quiz.title }}</td>
+                        <td style="padding: 10px;">{{ attempt.score }} / {{ attempt.total }}</td>
+                        <td style="padding: 10px;">{{ attempt.created_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You haven't attempted any quizzes yet.</p>
+            <p><a href="{% url 'home' %}" class="btn">Start a Quiz</a></p>
+        {% endif %}
+    </div>
+{% endblock %}
