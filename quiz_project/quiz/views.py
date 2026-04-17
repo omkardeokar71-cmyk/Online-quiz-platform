@@ -1,40 +1,81 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render, redirect
-from .forms import RegisterForm
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from .forms import RegisterForm, QuizForm, QuestionForm, ChoiceForm
+from .models import Quiz, Question, Choice
 
-# Register
+
 def register_view(request):
-    form = RegisterForm()
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    form = RegisterForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('login')
+
     return render(request, 'register.html', {'form': form})
 
 
-# Login
 def login_view(request):
-    form = AuthenticationForm()
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        return redirect('home')
+
     return render(request, 'login.html', {'form': form})
 
 
-# Logout
 def logout_view(request):
     logout(request)
     return redirect('login')
 
 
-# Home
 def home(request):
-    return render(request, 'home.html')
+    quizzes = Quiz.objects.all().order_by('-created_at')
+    return render(request, 'home.html', {'quizzes': quizzes})
+
+
+@login_required(login_url='login')
+def create_quiz(request):
+    form = QuizForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        quiz = form.save(commit=False)
+        quiz.created_by = request.user
+        quiz.save()
+        return redirect('add_question', quiz.id)
+
+    return render(request, 'create_quiz.html', {'form': form})
+
+
+@login_required(login_url='login')
+def add_question(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    form = QuestionForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        question = form.save(commit=False)
+        question.quiz = quiz
+        question.save()
+        return redirect('add_choice', question.id)
+
+    return render(request, 'add_question.html', {'form': form, 'quiz': quiz})
+
+
+@login_required(login_url='login')
+def add_choice(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    form = ChoiceForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        choice = form.save(commit=False)
+        choice.question = question
+        choice.save()
+        return redirect('add_choice', question.id)
+
+    return render(request, 'add_choice.html', {'form': form, 'question': question})
