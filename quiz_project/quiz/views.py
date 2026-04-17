@@ -36,11 +36,6 @@ def logout_view(request):
     return redirect('login')
 
 
-def home(request):
-    quizzes = Quiz.objects.all()
-    return render(request, 'home.html', {'quizzes': quizzes})
-
-
 @login_required(login_url='login')
 def dashboard(request):
     attempts = UserAttempt.objects.filter(user=request.user).order_by('-created_at')

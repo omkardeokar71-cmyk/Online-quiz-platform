@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Quiz Platform</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background-color: #f5f7fb; }
         header { margin-bottom: 30px; }
         nav a { margin-right: 15px; text-decoration: none; color: #0366d6; }
-        .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: white; }
         .button { background: #0366d6; color: white; border: none; padding: 10px 16px; border-radius: 5px; cursor: pointer; }
         .button:hover { background: #024e9f; }
         .logout { color: #d73a49; }
+        .category-nav { margin-top: 16px; }
+        .category-nav span { margin-right: 10px; font-weight: 600; }
+        .category-nav a { margin-right: 10px; text-decoration: none; color: #0366d6; }
     </style>
 </head>
 <body>
@@ -28,11 +31,21 @@
                 <a href="{% url 'register' %}">Register</a>
             {% endif %}
         </nav>
+        <nav class="category-nav">
+            <span>Categories:</span>
+            <a href="{% url 'home' %}">All</a>
+            <a href="{% url 'home' %}?category=tech">Tech</a>
+            <a href="{% url 'home' %}?category=math">Math</a>
+            <a href="{% url 'home' %}?category=gk">GK</a>
+        </nav>
     </header>
 
     {% block content %}{% endblock %}
 </body>
 </html>
-<a href="?category=tech">Tech</a>
-<a href="?category=math">Math</a>
-<a href="?category=gk">GK</a>
+button {
+    padding: 10px;
+    background: blue;
+    color: white;
+}
+</style>
