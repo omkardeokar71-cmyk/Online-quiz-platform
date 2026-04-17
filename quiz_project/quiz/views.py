@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm, QuizForm, QuestionForm, ChoiceForm
-from .models import Quiz, Question, Choice
+from .models import Quiz, Question
 
 
 def register_view(request):
@@ -37,7 +37,7 @@ def logout_view(request):
 
 
 def home(request):
-    quizzes = Quiz.objects.all().order_by('-created_at')
+    quizzes = Quiz.objects.all()
     return render(request, 'home.html', {'quizzes': quizzes})
 
 
@@ -79,3 +79,25 @@ def add_choice(request, question_id):
         return redirect('add_choice', question.id)
 
     return render(request, 'add_choice.html', {'form': form, 'question': question})
+
+
+def start_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    questions = quiz.questions.prefetch_related('choices').all()
+    score = None
+    total = questions.count()
+
+    if request.method == 'POST':
+        score = 0
+        for question in questions:
+            selected_choice_id = request.POST.get(f'q{question.id}')
+            if selected_choice_id:
+                if question.choices.filter(id=selected_choice_id, is_correct=True).exists():
+                    score += 1
+
+    return render(request, 'start_quiz.html', {
+        'quiz': quiz,
+        'questions': questions,
+        'score': score,
+        'total': total,
+    })

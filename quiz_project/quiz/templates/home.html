@@ -10,6 +10,7 @@
                         <strong>{{ quiz.title }}</strong>
                         <p>{{ quiz.description|default:'No description available' }}</p>
                         <small>Created by {{ quiz.created_by.username }}</small>
+                        <p><a href="{% url 'start_quiz' quiz.id %}">Start Quiz</a></p>
                     </li>
                 {% endfor %}
             </ul>
@@ -23,66 +24,3 @@
         {% endif %}
     </div>
 {% endblock %}
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-    <nav>
-        <a href="{% url 'home' %}" class="nav-brand">Quiz Platform</a>
-        <div class="nav-links">
-            <a href="{% url 'home' %}" class="active">Home</a>
-            {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'register' %}">Register</a>
-            {% endif %}
-        </div>
-    </nav>
-
-    <main>
-        <div class="card">
-            <h1>Online Quiz Platform</h1>
-
-            {% if user.is_authenticated %}
-            <p>Welcome, {{ user.username }}!</p>
-            <div class="btn-group">
-                <a href="{% url 'create_quiz' %}" class="btn btn-primary">Create a Quiz</a>
-                <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
-            </div>
-            {% else %}
-            <p>Test your knowledge with our interactive quizzes.</p>
-            <div class="btn-group">
-                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-outline">Register</a>
-            </div>
-            {% endif %}
-        </div>
-    </main>
-</body>
-
-</html>

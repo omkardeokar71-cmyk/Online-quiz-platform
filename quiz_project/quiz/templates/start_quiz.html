@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card">
+        <h2>{{ quiz.title }}</h2>
+
+        {% if score is not None %}
+            <div class="card" style="background: #f1f8e9;">
+                <strong>Quiz complete!</strong>
+                <p>You scored {{ score }} out of {{ total }}.</p>
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% for question in questions %}
+                <div class="question" style="display: none;">
+                    <h4>Question {{ forloop.counter }} of {{ questions|length }}</h4>
+                    <p>{{ question.question_text }}</p>
+
+                    {% for choice in question.choices.all %}
+                        <label>
+                            <input type="radio" name="q{{ question.id }}" value="{{ choice.id }}">
+                            {{ choice.choice_text }}
+                        </label><br>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div style="margin-top: 20px;">
+                <button type="button" id="prevBtn" onclick="changeQuestion(-1)">Previous</button>
+                <button type="button" id="nextBtn" onclick="changeQuestion(1)">Next</button>
+                <button type="submit" id="submitBtn">Submit</button>
+            </div>
+        </form>
+
+        <p id="timer">Time: 60</p>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const questions = Array.from(document.querySelectorAll('.question'));
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function showQuestion(index) {
+            questions.forEach((q, i) => {
+                q.style.display = i === index ? 'block' : 'none';
+            });
+
+            prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
+            nextBtn.style.display = index === questions.length - 1 ? 'none' : 'inline-block';
+            submitBtn.style.display = index === questions.length - 1 ? 'inline-block' : 'none';
+        }
+
+        function changeQuestion(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            showQuestion(currentIndex);
+        }
+
+        if (questions.length > 0) {
+            showQuestion(0);
+        }
+
+        let timeLeft = 60;
+        const timerElement = document.getElementById('timer');
+
+        const timer = setInterval(() => {
+            timerElement.innerText = 'Time: ' + timeLeft;
+            timeLeft -= 1;
+
+            if (timeLeft < 0) {
+                clearInterval(timer);
+                alert("Time's up! Your quiz will be submitted automatically.");
+                document.querySelector('form').submit();
+            }
+        }, 1000);
+    </script>
+{% endblock %}
